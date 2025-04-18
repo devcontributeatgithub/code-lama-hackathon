@@ -1,0 +1,29 @@
+name: Code Review with ollama
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+permissions: 
+  actions: write       # Necessary to cancel workflow executions
+  checks: write        # Necessary to write reports
+  pull-requests: write # Necessary to comment on PRs
+  contents: read
+  packages: write
+jobs:
+  code_review:
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Clone another repository
+        run: git clone $REPO_URL
+
+      - name: Code Review
+        uses: tomisacat/ai_code_review@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          OLLAMA_ADDRESS: ${{ secrets.OLLAMA_ADDRESS }}
+          exclude: "yarn.lock,dist/**"
